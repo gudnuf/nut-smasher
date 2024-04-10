@@ -1,0 +1,69 @@
+How to return errors through clnrest?
+How to specify HTTP error codes?
+Should I just throw error instead of return {error: "error message"}?
+raise RpcError??
+Possible answer: raise RpcExceptions with an http status code and message to display. Okay to use these code?
+
+What is causing clnrest to crash?
+
+Calle has a lot of good stuff in the nutshell, and I am pretty much copying it, but keeping it more simple. This better than pip installing nutshell and using his functions/classes/types?
+
+Added `overrides` to the route map.
+Better solution for the resource class factory? Overrides too
+
+Dynamically loading routes with a `{plugin_name}-route-map` rpc method
+how to make sure any plugins with route maps are able to get loaded into clnrest, even if started after clnrest?
+- Option: tells plugins that want ot register to emit a "plugin started" notification
+
+Quick question about why my channels have no inbound. Is it because I opened channels before my node was fully synced?
+
+Does the rpc method namespacing make sense? Thinking in terms of creating runes (not that I know how creating runes works). Idea: set permissions in order of least to most powerful: create a quote -> check a quote's status -> pay a quote
+
+Fee reserve: estimate fee? Or  do what nutshell does: https://github.com/cashubtc/nutshell/blob/ff1e7597d1777761dc5e9fb8efa732a919af3e0d/cashu/core/helpers.py#L42-L47
+  - ideally return change after paying invoice
+
+What do we need to store?
+- unpaid mint quotes (stored via the invoice label) `cashu:<quote_id>`
+- quotes we've issued tokens for
+    - can we do something with the invoice for this? Or do we just need to store in DB
+- spent secrets
+
+What do we NOT need to store?
+- melt quotes (need to store to look up invoice)
+    - probs just delete once tokens are melted? Or should we alway be able to return the quote?
+
+
+Change getmanifest lightning/lightningd/plugin.c ~1,350
+Change help command to be a list commands so that we can get all the help commands
+Add notification for plugin started and plugin stopped
+
+
+clnrest has websockets?? How could I use that to make the nwc plugin more robust/ less redundant?
+
+
+How to package a plugin for the lightning plugin repo?
+
+Can we also add in a content type for what each function returns? ie. application/json, text, etc
+
+Use hsm secret + something to make the seed?
+
+Do we just build it to the latest spec and then start worrying about versioning after a release? The spec is changing too fast.
+
+
+
+
+
+
+What's the next step?
+
+Most efficient way to work with Nifty is to answer all of my above questions and present here with the solutions.
+
+I am student she is master.
+
+Design questions:
+- Is it better to go all in on the Mint class? Or take add one more line the the method code for clarity
+- have a file for crud, file for models, and for plugin. 
+
+How do we package and ship this?
+
+Another option for next steps is to implement more of the nuts.
