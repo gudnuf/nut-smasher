@@ -9,12 +9,14 @@ import {
   GetInfoResponse,
   MeltQuoteResponse,
   MeltTokensResponse,
+  MintActiveKeys,
   MintAllKeysets,
   Proof,
   RequestMintResponse,
 } from "@cashu/cashu-ts";
 import request from "@cashu/cashu-ts/dist/lib/es5/request";
-import { joinUrls } from "@cashu/cashu-ts/dist/lib/es5/utils";
+import { getDecodedToken, joinUrls } from "@cashu/cashu-ts/dist/lib/es5/utils";
+import { useUsdMint } from "@/hooks/useUsdMint";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,10 +29,11 @@ export default function Home() {
   const [meltQuoteRes, setMeltQuoteRes] = useState<MeltQuoteResponse>();
   const [runTests, setRunTests] = useState(false);
 
-  const mint = new CashuMint(
-    // "https://nwc-mint.vercel.app/clun3vlkx00007snohdado6hy"
-    "http://localhost:5019/cluubdh1x0000ajib368whjmj"
-  );
+  const mintUrl = "http://localhost:3338";
+
+  useUsdMint({ mintUrl });
+
+  const mint = new CashuMint(mintUrl);
 
   const mintMeltAmount = 5000;
 
@@ -72,10 +75,10 @@ export default function Home() {
     console.log("Keysets: ", keysets);
 
     if (keysets) {
-      const keyset = await wallet.mint.getKeys(keysets.keysets[0].id);
+      const keyset = (await wallet.mint.getKeys(keysets.keysets[0].id)).keysets;
       console.log("Keyset: ", keyset);
 
-      if (keyset.id !== keysets.keysets[0].id) {
+      if (keyset[0].id !== keysets.keysets[0].id) {
         throw new Error("Keyset ID mismatch.");
       }
     }
@@ -356,6 +359,15 @@ export default function Home() {
     }
   };
 
+  const handleDecodeToken = async (encodedToken: string) => {
+    try {
+      const decodedToken = await getDecodedToken(encodedToken);
+      console.log("Decoded Token: ", decodedToken);
+    } catch (e) {
+      console.error("Error decoding token: ", e);
+    }
+  };
+
   const testMint = async (wallet: CashuWallet) => {
     // await testInfoRoute(wallet);
     // await testKeyRoutes(wallet);
@@ -379,7 +391,7 @@ export default function Home() {
         setRunTests(false);
       }
     };
-    run();
+    // run();
   }, [runTests]);
 
   const updateStoredProofs = (proofs: Proof[]) => {
@@ -565,6 +577,22 @@ export default function Home() {
           <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
             {JSON.stringify(meltData, null, 2)}
           </pre>
+        </div>
+        <div
+          style={{
+            maxWidth: "75%",
+            padding: "20px",
+            // background: "#f0f0f0",
+            borderRadius: "8px",
+          }}
+        >
+          <input
+            placeholder="encoded token"
+            onChange={(e) => handleDecodeToken(e.target.value)}
+          ></input>
+          {/* <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+            {JSON.stringify(decodedToken, null, 2)}
+          </pre> */}
         </div>
       </main>
     </>
